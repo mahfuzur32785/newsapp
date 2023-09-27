@@ -16,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String searchValue = "";
+  final searchCtrl = TextEditingController();
   final refreshKey = GlobalKey<RefreshIndicatorState>();
 
   @override
@@ -63,12 +64,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(16),
                       sliver: SliverToBoxAdapter(
                         child: TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: "Search here..."
+                          controller: searchCtrl,
+                          decoration: InputDecoration(
+                            hintText: "Search here...",
+                            suffixIcon: IconButton(onPressed: () {
+                              setState(() {
+                                searchCtrl.text = "";
+                                searchValue = "";
+                                Utils.closeKeyBoard(context);
+                              });
+                            }, icon: Icon(Icons.close))
                           ),
                           onChanged: (value) {
                             setState(() {
-                              searchValue = value;
+                              searchValue = value.toString();
                             });
                           },
                         ),
@@ -82,6 +91,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (homeBloc.homeModel!.articles[index].title.toLowerCase().contains(searchValue)) {
                               return GestureDetector(
                                 onTap: () {
+                                  setState(() {
+                                    searchValue="";
+                                  });
                                   Utils.closeKeyBoard(context);
                                   Navigator.pushNamed(
                                       context,
